@@ -1,83 +1,185 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mevrat Project</title>
-    <style>
-      :root {
-        color-scheme: light;
-        font-family: Georgia, "Times New Roman", serif;
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEVRAT | Treasury Vault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono&display=swap');
+    body { background: #020202; color: #fff; font-family: 'Inter', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .glass { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
+    input[type=range] { -webkit-appearance: none; background: rgba(255,255,255,0.1); height: 4px; border-radius: 5px; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%; background: #10b981; cursor: pointer; box-shadow: 0 0 10px #10b981; }
+    .glow-green { text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+  </style>
+</head>
+<body class="p-4 md:p-12">
+  <div class="max-w-5xl mx-auto space-y-10">
+    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+      <div class="flex items-center gap-4">
+        <img src="logo.png" alt="MEVRAT" class="h-12 w-auto">
+        <div>
+          <h1 class="text-3xl font-black italic tracking-tighter uppercase">MEV<span class="text-emerald-400">RAT</span></h1>
+          <p class="text-slate-500 text-[8px] mono uppercase tracking-[0.5em]">Treasury Settlement Pool</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        onclick="connectWallet()"
+        class="bg-white text-black font-black px-8 py-3 rounded-xl text-xs hover:bg-emerald-400 transition-all uppercase tracking-widest"
+      >
+        Connect Wallet
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div class="lg:col-span-7 space-y-6">
+        <div class="glass p-8 rounded-[2rem] border-white/5 shadow-2xl">
+          <h2 class="text-xl font-bold mb-8 flex items-center gap-2 uppercase tracking-tight">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Configure Deposit
+          </h2>
+
+          <div class="space-y-12">
+            <div class="space-y-4">
+              <div class="flex justify-between items-end gap-4">
+                <label class="text-[10px] text-slate-500 font-black uppercase">Allocation Amount</label>
+                <div class="text-right">
+                  <span id="amount-val" class="text-5xl font-black mono italic tracking-tighter">0.1</span>
+                  <span class="text-sm font-bold text-slate-500 ml-1">SOL</span>
+                </div>
+              </div>
+              <input type="range" id="sol-slider" min="0.1" max="25" step="0.1" value="0.1" class="w-full" oninput="updateUI()">
+              <div class="flex justify-between text-[10px] mono text-slate-600 font-bold uppercase">
+                <span>Min: 0.1 SOL</span>
+                <span>Max: 25.0 SOL</span>
+              </div>
+            </div>
+
+            <div class="bg-white/5 border border-white/5 rounded-2xl p-6 space-y-3">
+              <h4 class="text-[10px] text-emerald-400 font-black uppercase italic">Treasury Terms</h4>
+              <p class="text-xs text-slate-400 leading-relaxed">
+                Deposits are transferred on-chain to the treasury wallet and tracked after backend confirmation. Withdrawals are processed from the treasury with a <span class="text-white">transparent 1% fee</span>.
+              </p>
+              <p class="text-[10px] text-slate-600 italic">
+                * This interface shows actual tracked balances. It does not show simulated or guaranteed returns.
+              </p>
+            </div>
+
+            <div class="space-y-3">
+              <label for="wallet-address" class="text-[10px] text-slate-500 font-black uppercase">Wallet Address</label>
+              <input
+                id="wallet-address"
+                type="text"
+                placeholder="Your wallet address"
+                class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-slate-600 outline-none"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lg:col-span-5">
+        <div class="glass p-8 rounded-[2rem] border-emerald-500/20 h-full flex flex-col justify-between">
+          <div>
+            <h3 class="text-lg font-bold mb-6 uppercase tracking-widest text-slate-400">Vault Status</h3>
+
+            <div class="space-y-6">
+              <div class="pb-6 border-b border-white/5">
+                <p class="text-[9px] text-slate-500 uppercase font-black mb-1">Tracked Balance</p>
+                <p id="balance" class="text-4xl font-black mono text-emerald-400 glow-green tracking-tighter">0 <span class="text-sm">SOL</span></p>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Treasury Fee</p>
+                  <p class="mono text-sm font-bold text-white">1.0%</p>
+                </div>
+                <div>
+                  <p class="text-[9px] text-slate-500 uppercase font-bold mb-1">Network</p>
+                  <p class="mono text-sm font-bold text-emerald-500">SOL MAINNET</p>
+                </div>
+              </div>
+
+              <div class="bg-black/30 border border-white/5 rounded-2xl p-4">
+                <p class="text-[9px] text-slate-500 uppercase font-bold mb-2">Status</p>
+                <p id="status" class="text-sm text-slate-300 min-h-[20px]">Ready.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-8 space-y-4">
+            <button
+              type="button"
+              onclick="deposit()"
+              class="w-full bg-emerald-500 text-black font-black py-5 rounded-2xl text-xs uppercase tracking-widest hover:bg-emerald-400 transition-all shadow-lg shadow-emerald-500/10"
+            >
+              Confirm Deposit
+            </button>
+            <button
+              type="button"
+              onclick="loadBalance()"
+              class="w-full bg-white/10 text-white font-black py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-white/15 transition-all"
+            >
+              Load Balance
+            </button>
+            <button
+              type="button"
+              onclick="withdrawBalance()"
+              class="w-full bg-white text-black font-black py-4 rounded-2xl text-xs uppercase tracking-widest hover:bg-emerald-400 transition-all"
+            >
+              Withdraw Balance
+            </button>
+            <p class="text-center text-[10px] text-slate-500 font-bold uppercase">
+              Deposits verify on-chain. Withdrawals apply a transparent 1% fee.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-10">
+      <div class="border-t border-white/5 py-4 overflow-hidden">
+        <div class="flex gap-12 animate-pulse mono text-[10px] text-slate-500 uppercase font-bold whitespace-nowrap">
+          <span>• deposit to treasury</span>
+          <span>• backend confirms on-chain transfer</span>
+          <span>• tracked balance available for withdraw</span>
+          <span>• transparent 1% withdrawal fee</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+  <script src="./app.js"></script>
+  <script>
+    function updateUI() {
+      const slider = document.getElementById('sol-slider');
+      const amount = Number.parseFloat(slider.value || '0');
+      document.getElementById('amount-val').innerText = amount.toFixed(1);
+    }
+
+    async function connectWallet() {
+      const provider = window.phantom?.solana;
+      if (!provider?.isPhantom) {
+        setStatus('Please install Phantom.', true);
+        return;
       }
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(135deg, #f5efe0, #dce8f5);
-        color: #14213d;
+      try {
+        await provider.connect();
+        const walletInput = document.getElementById('wallet-address');
+        if (walletInput) {
+          walletInput.value = provider.publicKey.toString();
+        }
+        setStatus('Wallet connected.');
+      } catch (error) {
+        setStatus(error.message, true);
       }
+    }
 
-      main {
-        width: min(92vw, 540px);
-        padding: 32px;
-        border-radius: 24px;
-        background: rgba(255, 255, 255, 0.88);
-        box-shadow: 0 24px 80px rgba(20, 33, 61, 0.18);
-      }
-
-      h1 {
-        margin-top: 0;
-      }
-
-      label,
-      button {
-        display: block;
-        width: 100%;
-      }
-
-      input,
-      button {
-        margin-top: 8px;
-        margin-bottom: 16px;
-        padding: 12px 14px;
-        border-radius: 12px;
-        border: 1px solid #b8c4d6;
-        font: inherit;
-      }
-
-      button {
-        cursor: pointer;
-        background: #14213d;
-        color: #fff;
-        border: 0;
-      }
-
-      #status {
-        min-height: 24px;
-        color: #7a1f1f;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Mevrat Treasury</h1>
-      <p>Connect Phantom, deposit SOL, view your tracked balance, and request a withdrawal.</p>
-
-      <label for="sol-slider">Deposit Amount (SOL)</label>
-      <input id="sol-slider" type="number" min="0.01" step="0.01" value="0.1" />
-      <button type="button" onclick="deposit()">Deposit</button>
-
-      <label for="wallet-address">Wallet Address</label>
-      <input id="wallet-address" type="text" placeholder="Your wallet address" />
-      <button type="button" onclick="loadBalance()">Load Balance</button>
-      <button type="button" onclick="withdrawBalance()">Withdraw Balance</button>
-
-      <p id="balance">Tracked balance: 0 SOL</p>
-      <p id="status"></p>
-    </main>
-    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
-    <script src="./app.js"></script>
-  </body>
+    updateUI();
+  </script>
+</body>
 </html>
