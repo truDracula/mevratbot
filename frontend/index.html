@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mevrat Project</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family: Georgia, "Times New Roman", serif;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, #f5efe0, #dce8f5);
+        color: #14213d;
+      }
+
+      main {
+        width: min(92vw, 540px);
+        padding: 32px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.88);
+        box-shadow: 0 24px 80px rgba(20, 33, 61, 0.18);
+      }
+
+      h1 {
+        margin-top: 0;
+      }
+
+      label,
+      button {
+        display: block;
+        width: 100%;
+      }
+
+      input,
+      button {
+        margin-top: 8px;
+        margin-bottom: 16px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid #b8c4d6;
+        font: inherit;
+      }
+
+      button {
+        cursor: pointer;
+        background: #14213d;
+        color: #fff;
+        border: 0;
+      }
+
+      #status {
+        min-height: 24px;
+        color: #7a1f1f;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Mevrat Treasury</h1>
+      <p>Connect Phantom, deposit SOL, view your tracked balance, and request a withdrawal.</p>
+
+      <label for="sol-slider">Deposit Amount (SOL)</label>
+      <input id="sol-slider" type="number" min="0.01" step="0.01" value="0.1" />
+      <button type="button" onclick="deposit()">Deposit</button>
+
+      <label for="wallet-address">Wallet Address</label>
+      <input id="wallet-address" type="text" placeholder="Your wallet address" />
+      <button type="button" onclick="loadBalance()">Load Balance</button>
+      <button type="button" onclick="withdrawBalance()">Withdraw Balance</button>
+
+      <p id="balance">Tracked balance: 0 SOL</p>
+      <p id="status"></p>
+    </main>
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

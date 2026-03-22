@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: mevrat-project
+    runtime: node
+    plan: free
+    rootDir: .
+    buildCommand: npm install --prefix backend
+    startCommand: npm start --prefix backend
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 10000
+      - key: MONGO_URI
+        sync: false
+      - key: SOLANA_RPC_URL
+        value: https://api.mainnet-beta.solana.com
+      - key: TREASURY_PRIVATE_KEY
+        sync: false
