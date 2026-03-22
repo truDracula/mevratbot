@@ -40,7 +40,7 @@ async function startServer() {
     });
   });
 
-  app.get("*", (_req, res) => {
+  app.use((_req, res) => {
     res.sendFile(path.join(frontendDir, "index.html"));
   });
 
