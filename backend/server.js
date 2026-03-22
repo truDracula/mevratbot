@@ -33,6 +33,13 @@ async function startServer() {
     solanaWeb3,
   });
 
+  app.get("/api/config", (_req, res) => {
+    res.json({
+      rpcUrl: process.env.PUBLIC_SOLANA_RPC_URL || process.env.SOLANA_RPC_URL,
+      treasuryPubkey: treasuryKeypair.publicKey.toBase58(),
+    });
+  });
+
   app.get("/api/health", (_req, res) => {
     res.json({
       ok: true,

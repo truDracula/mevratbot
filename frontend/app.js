@@ -1,5 +1,5 @@
-const TREASURY_PUBKEY = "Ey48QkBMBKaZ4Mg2pmQJZvU8NbtSj8vshgvu2b3sVzhe";
-const RPC_URL = "https://api.mainnet-beta.solana.com";
+let TREASURY_PUBKEY = "Ey48QkBMBKaZ4Mg2pmQJZvU8NbtSj8vshgvu2b3sVzhe";
+let RPC_URL = "https://api.mainnet-beta.solana.com";
 
 function setStatus(message, isError = false) {
   const status = document.getElementById("status");
@@ -15,6 +15,25 @@ function updateBalance(balance) {
   const balanceElement = document.getElementById("balance");
   if (balanceElement) {
     balanceElement.textContent = `Tracked balance: ${balance} SOL`;
+  }
+}
+
+async function loadRuntimeConfig() {
+  try {
+    const response = await fetch("/api/config");
+    if (!response.ok) {
+      return;
+    }
+
+    const data = await response.json();
+    if (data.rpcUrl) {
+      RPC_URL = data.rpcUrl;
+    }
+    if (data.treasuryPubkey) {
+      TREASURY_PUBKEY = data.treasuryPubkey;
+    }
+  } catch (_error) {
+    // Keep local defaults if the config route is unavailable.
   }
 }
 
@@ -141,3 +160,4 @@ async function withdrawBalance() {
 window.deposit = deposit;
 window.loadBalance = loadBalance;
 window.withdrawBalance = withdrawBalance;
+window.loadRuntimeConfig = loadRuntimeConfig;

@@ -15,5 +15,7 @@ services:
         sync: false
       - key: SOLANA_RPC_URL
         value: https://api.mainnet-beta.solana.com
+      - key: PUBLIC_SOLANA_RPC_URL
+        value: https://api.mainnet-beta.solana.com
       - key: TREASURY_PRIVATE_KEY
         sync: false
